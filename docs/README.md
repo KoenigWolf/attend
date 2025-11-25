@@ -11,6 +11,7 @@ docs/
 ├── code-structure.md             # コード構造とファイル説明
 ├── supabase-setup.md            # Supabase セットアップガイド
 ├── supabase-usage.md            # Supabase 実践ガイド
+├── vercel-setup.md              # Vercel 環境変数設定ガイド
 ├── ai-development-guide.md      # AI開発者向けガイド
 ├── design-guide.md              # デザインガイドライン
 └── improvements.md             # 改善点リスト
@@ -82,6 +83,21 @@ Supabase の実践的な使い方を説明します。
 - トラブルシューティング
 
 **読むべき人**: Supabase の使い方がわからない開発者、実際にコードを書く開発者
+
+---
+
+#### [vercel-setup.md](./vercel-setup.md)
+
+Vercel での環境変数設定方法を説明します。
+
+**内容**:
+
+- Vercel での環境変数設定手順
+- Supabase 環境変数の設定方法
+- デプロイ後の確認方法
+- トラブルシューティング
+
+**読むべき人**: Vercel にデプロイする開発者、本番環境でエラーが出ている開発者
 
 ---
 

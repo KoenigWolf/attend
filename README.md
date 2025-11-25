@@ -19,7 +19,7 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 - 日次・月次の勤務時間の表示
 - カレンダービューでの勤務状況確認
 - 勤務履歴の一覧表示
- - 出退勤・休憩時間の後編集（モバイルでも見やすいフォーム）
+- 出退勤・休憩時間の後編集（モバイルでも見やすいフォーム）
 - データの Supabase (PostgreSQL) への保存
 - レスポンシブデザイン対応
 
@@ -118,6 +118,7 @@ Attendance/
 - **[コード構造ガイド](./docs/code-structure.md)** - ファイル構成と各モジュールの説明
 - **[Supabase セットアップガイド](./docs/supabase-setup.md)** - Supabase Database のセットアップと使い方
 - **[Supabase 実践ガイド](./docs/supabase-usage.md)** - Supabase の実践的な使い方とコード例
+- **[Vercel 環境変数設定ガイド](./docs/vercel-setup.md)** - Vercel での環境変数設定方法
 - **[デザインガイド](./docs/design-guide.md)** - UI/UX デザインのガイドライン
 - **[改善点リスト](./docs/improvements.md)** - 既知の改善点と優先順位
 - **[AI 開発ガイド](./docs/ai-development-guide.md)** - AI 開発者向けのガイドライン
