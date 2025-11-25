@@ -19,7 +19,7 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 - 日次・月次の勤務時間の表示
 - カレンダービューでの勤務状況確認
 - 勤務履歴の一覧表示
-- データのローカルストレージへの自動保存
+- データの Firestore への保存
 - レスポンシブデザイン対応
 
 ## 技術スタック
@@ -43,6 +43,12 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 # 依存関係のインストール
 npm install
 ```
+
+### Firestore の準備
+
+1. Firebase プロジェクトを作成し、Firestore Database を有効化します。
+2. Web アプリを追加して構成情報を取得し、`.env.example` を参考に `.env.local` を作成して各キーを設定します。
+3. 依存関係に Firebase SDK を追加したので、`npm install` を実行してください。
 
 ### 開発サーバーの起動
 
@@ -86,8 +92,10 @@ Attendance/
 │   ├── types/            # TypeScript型定義
 │   │   └── attendance.ts
 │   └── utils/            # ユーティリティ関数
-│       ├── storage.ts    # ローカルストレージ操作
+│       ├── firebase.ts   # Firebase 初期化
+│       ├── storage.ts    # Firestore 読み書き
 │       └── time.ts       # 時間処理
+├── .env.example          # 環境変数のサンプル（Firebase）
 ├── docs/                 # ドキュメント
 │   ├── architecture.md    # アーキテクチャ説明
 │   ├── code-structure.md # コード構造ガイド

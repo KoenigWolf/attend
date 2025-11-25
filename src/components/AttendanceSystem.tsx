@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { AttendanceRecord, AttendanceState } from '@/types/attendance'
-import { saveRecords, loadRecords } from '@/utils/storage'
-import { getCurrentTime, getCurrentDate, formatTime, calculateMinutes, formatMinutes } from '@/utils/time'
+import { saveRecord, loadRecords } from '@/utils/storage'
+import { getCurrentTime, getCurrentDate } from '@/utils/time'
 import AttendanceButton from './AttendanceButton'
 import TodaySummary from './TodaySummary'
 import MonthlyCalendar from './MonthlyCalendar'
@@ -17,60 +17,54 @@ export default function AttendanceSystem() {
     isClockedIn: false,
     isOnBreak: false,
   })
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const records = loadRecords()
+  const syncState = (records: AttendanceRecord[]) => {
     const today = getCurrentDate()
     const todayRecord = records.find(r => r.date === today)
 
-    setState(prev => ({
-      ...prev,
+    setState({
       records,
       isClockedIn: !!todayRecord?.clockIn && !todayRecord?.clockOut,
       isOnBreak: !!todayRecord?.breakStart && !todayRecord?.breakEnd,
-    }))
+    })
+  }
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const records = await loadRecords()
+        syncState(records)
+        setError(null)
+      } catch (e) {
+        console.error('Failed to load records', e)
+        setError('記録の取得に失敗しました。再度お試しください。')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRecords()
   }, [])
 
   const getTodayRecord = (): AttendanceRecord | undefined => {
     return state.records.find(r => r.date === getCurrentDate())
   }
 
-  const updateRecord = (updates: Partial<AttendanceRecord>) => {
-    const today = getCurrentDate()
-    const existingRecord = state.records.find(r => r.date === today)
-    
-    let updatedRecord: AttendanceRecord
-    if (existingRecord) {
-      updatedRecord = { ...existingRecord, ...updates }
-    } else {
-      updatedRecord = {
-        id: Date.now().toString(),
-        date: today,
-        ...updates,
-      }
+  const updateRecord = async (updates: Partial<AttendanceRecord>) => {
+    setSaving(true)
+    try {
+      const records = await saveRecord(getCurrentDate(), updates)
+      syncState(records)
+      setError(null)
+    } catch (e) {
+      console.error('Failed to save record', e)
+      setError('記録の保存に失敗しました。時間をおいて再度お試しください。')
+    } finally {
+      setSaving(false)
     }
-
-    // 勤務時間と休憩時間を計算
-    if (updatedRecord.clockIn && updatedRecord.clockOut) {
-      const workMinutes = calculateMinutes(updatedRecord.clockIn, updatedRecord.clockOut)
-      const breakMinutes = updatedRecord.breakStart && updatedRecord.breakEnd
-        ? calculateMinutes(updatedRecord.breakStart, updatedRecord.breakEnd)
-        : 0
-      updatedRecord.totalWorkTime = workMinutes - breakMinutes
-      updatedRecord.totalBreakTime = breakMinutes
-    }
-
-    const updatedRecords = existingRecord
-      ? state.records.map(r => r.date === today ? updatedRecord : r)
-      : [...state.records, updatedRecord]
-
-    saveRecords(updatedRecords)
-    setState(prev => ({
-      ...prev,
-      records: updatedRecords,
-      isClockedIn: !!updatedRecord.clockIn && !updatedRecord.clockOut,
-      isOnBreak: !!updatedRecord.breakStart && !updatedRecord.breakEnd,
-    }))
   }
 
   const handleClockIn = () => {
@@ -100,6 +94,7 @@ export default function AttendanceSystem() {
     : state.isClockedIn
       ? 'text-blue-700 bg-blue-50 ring-1 ring-blue-100'
       : 'text-amber-700 bg-amber-50 ring-1 ring-amber-100'
+  const isBusy = loading || saving
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -129,6 +124,11 @@ export default function AttendanceSystem() {
               </div>
             </div>
           </div>
+          {error && (
+            <div className="text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+              {error}
+            </div>
+          )}
         </div>
       </div>
 
@@ -150,32 +150,35 @@ export default function AttendanceSystem() {
             <AttendanceButton
               label="出勤"
               onClick={handleClockIn}
-              disabled={state.isClockedIn}
+              disabled={isBusy || state.isClockedIn}
               variant="primary"
               time={todayRecord?.clockIn}
             />
             <AttendanceButton
               label="退勤"
               onClick={handleClockOut}
-              disabled={!state.isClockedIn || !!todayRecord?.clockOut}
+              disabled={isBusy || !state.isClockedIn || !!todayRecord?.clockOut}
               variant="secondary"
               time={todayRecord?.clockOut}
             />
             <AttendanceButton
               label="休憩開始"
               onClick={handleBreakStart}
-              disabled={!state.isClockedIn || state.isOnBreak || !!todayRecord?.clockOut}
+              disabled={isBusy || !state.isClockedIn || state.isOnBreak || !!todayRecord?.clockOut}
               variant="warning"
               time={todayRecord?.breakStart}
             />
             <AttendanceButton
               label="休憩終了"
               onClick={handleBreakEnd}
-              disabled={!state.isOnBreak}
+              disabled={isBusy || !state.isOnBreak}
               variant="info"
               time={todayRecord?.breakEnd}
             />
           </div>
+          {loading && (
+            <p className="text-sm text-slate-400">サーバーから記録を取得しています…</p>
+          )}
         </div>
       </div>
 
