@@ -132,8 +132,8 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   )
 
   return (
-    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6">
-      <div className="flex items-baseline justify-between mb-4">
+    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5">
+      <div className="flex items-baseline justify-between mb-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">History</p>
           <h2 className="text-xl font-bold text-slate-900">勤務履歴</h2>

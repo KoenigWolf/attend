@@ -30,8 +30,8 @@ export default function MonthlyCalendar({ records }: MonthlyCalendarProps) {
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5">
+      <div className="flex items-center justify-between mb-4">
         <button
           onClick={goToPreviousMonth}
           className="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 hover:-translate-y-0.5 transition-all bg-white shadow-sm"

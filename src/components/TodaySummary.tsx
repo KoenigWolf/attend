@@ -12,8 +12,8 @@ export default function TodaySummary({ record }: TodaySummaryProps) {
   const breakTime = record?.totalBreakTime || 0
 
   return (
-    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-7">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Today</p>
           <h2 className="text-2xl font-bold text-slate-900">本日の勤務状況</h2>

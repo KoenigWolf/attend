@@ -31,7 +31,7 @@ export default function AttendanceButton({
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full h-full rounded-2xl px-4 py-5 text-left font-semibold text-lg
+        w-full h-full rounded-2xl px-4 py-4 text-left font-semibold text-base sm:text-lg
         transition-all duration-200 transform border
         ${disabled ? disabledStyles : variantStyles[variant]}
         ${!disabled ? 'hover:-translate-y-0.5 active:translate-y-0 shadow-sm' : ''}

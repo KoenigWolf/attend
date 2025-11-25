@@ -109,18 +109,18 @@ export default function AttendanceSystem() {
   const isBusy = loading || saving
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-7 sm:p-8">
+    <div className="max-w-7xl mx-auto space-y-5">
+      <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-6">
         <div className="flex flex-col gap-4">
           <div className="inline-flex items-center self-start rounded-full px-3 py-1 bg-blue-50 text-blue-700 text-sm font-semibold">
             デイリートラッカー
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                 勤怠管理システム
               </h1>
-              <p className="text-slate-500 mt-2">
+              <p className="text-slate-500 mt-1 text-sm sm:text-base">
                 シンプルで見やすく、日々の出退勤を管理します。
               </p>
             </div>
@@ -144,12 +144,12 @@ export default function AttendanceSystem() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-[1.6fr_1fr] gap-3 sm:gap-4">
+        <div className="space-y-4">
           <TodaySummary record={todayRecord} />
         </div>
 
-        <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6 flex flex-col gap-4">
+        <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5 flex flex-col gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Actions</p>
             <h3 className="text-xl font-bold text-slate-900 mt-1">出退勤を記録</h3>
@@ -158,7 +158,7 @@ export default function AttendanceSystem() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <AttendanceButton
               label="出勤"
               onClick={handleClockIn}
@@ -194,7 +194,7 @@ export default function AttendanceSystem() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-3 sm:gap-4">
         <MonthlyCalendar records={state.records} />
         <HistoryList
           records={state.records}
