@@ -1,7 +1,7 @@
 'use client'
 
 import { AttendanceRecord } from '@/types/attendance'
-import { formatTime, formatMinutes } from '@/utils/time'
+import { formatTime, formatMinutes, calculateTotalBreakMinutes } from '@/utils/time'
 
 interface TodaySummaryProps {
   record?: AttendanceRecord
@@ -9,7 +9,7 @@ interface TodaySummaryProps {
 
 export default function TodaySummary({ record }: TodaySummaryProps) {
   const workTime = record?.totalWorkTime || 0
-  const breakTime = record?.totalBreakTime || 0
+  const breakTime = record?.totalBreakTime ?? calculateTotalBreakMinutes(record?.breaks)
 
   return (
     <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5 sm:p-6">

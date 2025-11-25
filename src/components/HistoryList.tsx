@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { AttendanceRecord } from '@/types/attendance'
 import { format, parse, compareDesc } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { formatTime, formatMinutes } from '@/utils/time'
+import { formatTime, formatMinutes, calculateTotalBreakMinutes } from '@/utils/time'
 
 interface HistoryListProps {
   records: AttendanceRecord[]
@@ -92,10 +92,12 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
         )}
       </div>
       {record.totalBreakTime !== undefined && record.totalBreakTime > 0 && (
-        <div>
-          <span className="text-slate-400">休憩時間: </span>
-          <span className="font-semibold text-slate-800">{formatMinutes(record.totalBreakTime)}</span>
-        </div>
+      <div>
+        <span className="text-slate-400">休憩時間: </span>
+        <span className="font-semibold text-slate-800">
+          {formatMinutes(record.totalBreakTime ?? calculateTotalBreakMinutes(record.breaks))}
+        </span>
+      </div>
       )}
     </div>
   )
