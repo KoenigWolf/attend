@@ -1,30 +1,27 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-  orderBy,
-  query,
-  serverTimestamp,
-  setDoc,
-} from 'firebase/firestore'
 import { AttendanceRecord } from '@/types/attendance'
 import { calculateMinutes } from '@/utils/time'
-import { firebaseApp } from './firebase'
+import { getSupabaseClient } from './supabaseClient'
 
-const db = getFirestore(firebaseApp)
-const recordsCollection = collection(db, 'attendance_records')
+type SupabaseRow = {
+  id: string
+  date: string
+  clock_in: string | null
+  clock_out: string | null
+  break_start: string | null
+  break_end: string | null
+  total_work_time: number | null
+  total_break_time: number | null
+}
 
-const toRecord = (id: string, data: any): AttendanceRecord => ({
-  id,
-  date: data.date,
-  clockIn: data.clockIn ?? undefined,
-  clockOut: data.clockOut ?? undefined,
-  breakStart: data.breakStart ?? undefined,
-  breakEnd: data.breakEnd ?? undefined,
-  totalWorkTime: data.totalWorkTime ?? undefined,
-  totalBreakTime: data.totalBreakTime ?? undefined,
+const toSupabaseRecord = (row: SupabaseRow): AttendanceRecord => ({
+  id: row.id,
+  date: row.date,
+  clockIn: row.clock_in ?? undefined,
+  clockOut: row.clock_out ?? undefined,
+  breakStart: row.break_start ?? undefined,
+  breakEnd: row.break_end ?? undefined,
+  totalWorkTime: row.total_work_time ?? undefined,
+  totalBreakTime: row.total_break_time ?? undefined,
 })
 
 const computeTotals = (record: AttendanceRecord) => {
@@ -55,37 +52,71 @@ const computeTotals = (record: AttendanceRecord) => {
   }
 }
 
+const loadFromSupabase = async (): Promise<AttendanceRecord[]> => {
+  const supabase = getSupabaseClient()
+  const { data, error } = await supabase
+    .from<SupabaseRow>('attendance_records')
+    .select('*')
+    .order('date', { ascending: false })
+
+  if (error) {
+    throw error
+  }
+
+  return (data || []).map(toSupabaseRecord)
+}
+
+const saveToSupabase = async (
+  date: string,
+  updates: Partial<AttendanceRecord>
+): Promise<AttendanceRecord[]> => {
+  const supabase = getSupabaseClient()
+  const { data: existing, error: fetchError } = await supabase
+    .from<SupabaseRow>('attendance_records')
+    .select('*')
+    .eq('date', date)
+    .maybeSingle()
+
+  if (fetchError && fetchError.code !== 'PGRST116') {
+    throw fetchError
+  }
+
+  const baseRecord: AttendanceRecord = existing ? toSupabaseRecord(existing) : { id: date, date }
+  const merged: AttendanceRecord = { ...baseRecord, ...updates, date }
+  const totals = computeTotals(merged)
+  merged.totalWorkTime = totals.totalWorkTime
+  merged.totalBreakTime = totals.totalBreakTime
+
+  const { error: upsertError } = await supabase.from('attendance_records').upsert(
+    [
+      {
+        id: merged.id,
+        date: merged.date,
+        clock_in: merged.clockIn ?? null,
+        clock_out: merged.clockOut ?? null,
+        break_start: merged.breakStart ?? null,
+        break_end: merged.breakEnd ?? null,
+        total_work_time: merged.totalWorkTime ?? null,
+        total_break_time: merged.totalBreakTime ?? null,
+      },
+    ],
+    { onConflict: 'date' }
+  )
+
+  if (upsertError) {
+    throw upsertError
+  }
+
+  return loadFromSupabase()
+}
+
 export const loadRecords = async (): Promise<AttendanceRecord[]> => {
-  const q = query(recordsCollection, orderBy('date', 'desc'))
-  const snapshot = await getDocs(q)
-  return snapshot.docs.map(docSnap => toRecord(docSnap.id, docSnap.data()))
+  return loadFromSupabase()
 }
 
 export const saveRecord = async (
   date: string,
   updates: Partial<AttendanceRecord>
 ): Promise<AttendanceRecord[]> => {
-  const ref = doc(recordsCollection, date)
-  const existingSnap = await getDoc(ref)
-
-  const baseRecord: AttendanceRecord = existingSnap.exists()
-    ? toRecord(ref.id, existingSnap.data())
-    : { id: ref.id, date }
-
-  const merged: AttendanceRecord = { ...baseRecord, ...updates, date }
-  const totals = computeTotals(merged)
-  merged.totalWorkTime = totals.totalWorkTime
-  merged.totalBreakTime = totals.totalBreakTime
-
-  await setDoc(
-    ref,
-    {
-      ...merged,
-      updatedAt: serverTimestamp(),
-      createdAt: existingSnap.exists() ? existingSnap.get('createdAt') : serverTimestamp(),
-    },
-    { merge: true }
-  )
-
-  return loadRecords()
+  return saveToSupabase(date, updates)
 }

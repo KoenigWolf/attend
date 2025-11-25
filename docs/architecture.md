@@ -2,7 +2,7 @@
 
 ## 概要
 
-勤怠管理システムは、Next.js 14 の App Router を使用したクライアントサイドアプリケーションです。データは Firestore Database に保存され、複数デバイス間で同期されます。
+勤怠管理システムは、Next.js 14 の App Router を使用したクライアントサイドアプリケーションです。データは Supabase (PostgreSQL) に保存され、複数デバイス間で同期されます。
 
 ## アーキテクチャパターン
 
@@ -74,8 +74,8 @@ interface AttendanceState {
 
 #### storage.ts
 
-- `saveRecord()`: Firestore への保存
-- `loadRecords()`: Firestore からの読み込み
+- `saveRecord()`: Supabase への保存
+- `loadRecords()`: Supabase からの読み込み
 
 #### time.ts
 
@@ -117,7 +117,7 @@ interface AttendanceRecord {
    ↓
 5. 勤務時間を計算（退勤済みの場合）
    ↓
-6. saveRecord() で Firestore に保存
+6. saveRecord() で Supabase に保存
    ↓
 7. setState() で状態を更新
    ↓
@@ -131,7 +131,7 @@ interface AttendanceRecord {
    ↓
 2. useEffect が実行
    ↓
-3. loadRecords() で Firestore から読み込み
+3. loadRecords() で Supabase から読み込み
    ↓
 4. 今日の記録を検索
    ↓
@@ -147,7 +147,7 @@ interface AttendanceRecord {
 ### 現在のアプローチ
 
 - **React useState**: コンポーネント内の状態管理
-- **Firestore**: データの永続化と同期
+- **Supabase**: データの永続化と同期
 - **Props Drilling**: 親から子へのデータ受け渡し
 
 ### 状態の更新パターン
@@ -223,8 +223,8 @@ useEffect(() => {
 
 3. **認証機能の追加**
 
-   - Firebase Authentication の統合
-   - Firestore Security Rules の更新
+   - Supabase Authentication の統合
+   - Row Level Security (RLS) の設定
    - ユーザー別データ管理
 
 4. **オフライン対応の強化**
@@ -237,11 +237,11 @@ useEffect(() => {
 ### 現在の実装
 
 - クライアントサイドの処理
-- Firestore への保存（クラウドベース）
+- Supabase への保存（クラウドベース）
 
 ### 注意点
 
-- Firestore Security Rules で適切なアクセス制御を設定
+- Row Level Security (RLS) で適切なアクセス制御を設定
 - 環境変数の管理（`.env.local`に保存）
 - XSS 対策は Next.js のデフォルト設定に依存
 

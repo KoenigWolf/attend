@@ -9,7 +9,7 @@ docs/
 ├── README.md                    # このファイル（ナビゲーション）
 ├── architecture.md              # システムアーキテクチャ
 ├── code-structure.md             # コード構造とファイル説明
-├── firestore-setup.md           # Firestore セットアップガイド
+├── supabase-setup.md            # Supabase セットアップガイド
 ├── ai-development-guide.md      # AI開発者向けガイド
 ├── design-guide.md              # デザインガイドライン
 └── improvements.md             # 改善点リスト
@@ -51,20 +51,20 @@ docs/
 
 ---
 
-#### [firestore-setup.md](./firestore-setup.md)
+#### [supabase-setup.md](./supabase-setup.md)
 
-Firestore Database のセットアップと使い方を説明します。
+Supabase Database のセットアップと使い方を説明します。
 
 **内容**:
 
-- Firestore とは
-- セットアップ手順（Firebase プロジェクト作成、Firestore 有効化）
+- Supabase とは
+- セットアップ手順（Supabase プロジェクト作成、テーブル作成）
 - 環境変数の設定
 - データの保存・読み込み方法
 - データ構造
 - トラブルシューティング
 
-**読むべき人**: Firestore を初めて使う開発者、データベース設定を行う開発者
+**読むべき人**: Supabase を初めて使う開発者、データベース設定を行う開発者
 
 ---
 
@@ -152,12 +152,13 @@ UI/UX デザインのガイドラインとスタイリング規約です。
 2. **[design-guide.md](./design-guide.md)** - デザインガイドラインを確認
 3. **[ai-development-guide.md](./ai-development-guide.md)** - コーディング規約を確認
 
-### Firestore 設定時
+### Supabase 設定時
 
-1. **[firestore-setup.md](./firestore-setup.md)** - Firestore セットアップガイドを読む
-2. Firebase Console でプロジェクトを作成
-3. 環境変数を設定
-4. セキュリティルールを設定
+1. **[supabase-setup.md](./supabase-setup.md)** - Supabase セットアップガイドを読む
+2. Supabase Dashboard でプロジェクトを作成
+3. テーブルを作成（SQL を実行）
+4. 環境変数を設定
+5. RLS ポリシーを設定
 
 ### バグ修正時
 

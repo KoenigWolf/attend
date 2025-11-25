@@ -19,14 +19,14 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 - 日次・月次の勤務時間の表示
 - カレンダービューでの勤務状況確認
 - 勤務履歴の一覧表示
-- データの Firestore への保存
+- データの Supabase (PostgreSQL) への保存
 - レスポンシブデザイン対応
 
 ## 技術スタック
 
 - **フレームワーク**: Next.js 14 (App Router)
 - **言語**: TypeScript
-- **データベース**: Firestore (Firebase)
+- **データベース**: Supabase (PostgreSQL)
 - **スタイリング**: Tailwind CSS
 - **日付処理**: date-fns
 - **フォント**: Manrope (Google Fonts)
@@ -45,11 +45,12 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 npm install
 ```
 
-### Firestore の準備
+### Supabase の準備（必須）
 
-1. Firebase プロジェクトを作成し、Firestore Database を有効化します。
-2. Web アプリを追加して構成情報を取得し、`.env.example` を参考に `.env.local` を作成して各キーを設定します。
-3. 依存関係に Firebase SDK を追加したので、`npm install` を実行してください。
+1. Supabase プロジェクトを作成し、`.env.example` を参考に `.env.local` に `NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` を設定。
+2. Supabase の SQL エディタで `db/supabase.sql` を実行して `attendance_records` テーブルを作成。
+3. `npm install` を実行（`@supabase/supabase-js` を利用します）。
+4. RLS を有効化したままの場合は、匿名キーで read/write できるポリシーを開発用に追加するか、適切な認証を設定してください。
 
 ### 開発サーバーの起動
 
@@ -93,10 +94,12 @@ Attendance/
 │   ├── types/            # TypeScript型定義
 │   │   └── attendance.ts
 │   └── utils/            # ユーティリティ関数
-│       ├── firebase.ts   # Firebase 初期化
-│       ├── storage.ts    # Firestore 読み書き
+│       ├── supabaseClient.ts # Supabase クライアント初期化
+│       ├── storage.ts    # Supabase 読み書き
 │       └── time.ts       # 時間処理
-├── .env.example          # 環境変数のサンプル（Firebase）
+├── db/                   # DB スキーマ
+│   └── supabase.sql
+├── .env.example          # 環境変数のサンプル（Supabase）
 ├── docs/                 # ドキュメント
 │   ├── architecture.md    # アーキテクチャ説明
 │   ├── code-structure.md # コード構造ガイド
@@ -112,7 +115,7 @@ Attendance/
 
 - **[アーキテクチャ説明](./docs/architecture.md)** - システムの全体構造と設計思想
 - **[コード構造ガイド](./docs/code-structure.md)** - ファイル構成と各モジュールの説明
-- **[Firestore セットアップガイド](./docs/firestore-setup.md)** - Firestore Database のセットアップと使い方
+- **[Supabase セットアップガイド](./docs/supabase-setup.md)** - Supabase Database のセットアップと使い方
 - **[デザインガイド](./docs/design-guide.md)** - UI/UX デザインのガイドライン
 - **[改善点リスト](./docs/improvements.md)** - 既知の改善点と優先順位
 - **[AI 開発ガイド](./docs/ai-development-guide.md)** - AI 開発者向けのガイドライン

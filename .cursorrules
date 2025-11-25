@@ -7,7 +7,7 @@
 - **フレームワーク**: Next.js 14 (App Router)
 - **言語**: TypeScript (strict mode)
 - **スタイリング**: Tailwind CSS
-- **状態管理**: React useState + localStorage
+- **状態管理**: React useState + Supabase
 - **日付処理**: date-fns
 
 ## コーディング規約
@@ -70,17 +70,18 @@ export default function Component({ ... }: ComponentProps) {
 ## 状態管理
 
 - React useStateを使用
-- localStorageへの保存は`utils/storage.ts`を使用
+- Supabaseへの保存は`utils/storage.ts`を使用
 - 状態更新はイミュータブルに行う
 
 ## ドキュメント参照
 
 コード生成時は、以下のドキュメントを参照：
-1. [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - アーキテクチャの理解
-2. [CODE_STRUCTURE.md](./docs/CODE_STRUCTURE.md) - ファイル構造の理解
-3. [DESIGN_GUIDE.md](./DESIGN_GUIDE.md) - スタイリングガイド
-4. [AI_DEVELOPMENT_GUIDE.md](./docs/AI_DEVELOPMENT_GUIDE.md) - AI開発ガイド
-5. [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 既知の問題と改善点
+1. [architecture.md](./docs/architecture.md) - アーキテクチャの理解
+2. [code-structure.md](./docs/code-structure.md) - ファイル構造の理解
+3. [design-guide.md](./docs/design-guide.md) - スタイリングガイド
+4. [supabase-setup.md](./docs/supabase-setup.md) - Supabaseセットアップガイド
+5. [ai-development-guide.md](./docs/ai-development-guide.md) - AI開発ガイド
+6. [improvements.md](./docs/improvements.md) - 既知の問題と改善点
 
 ## 避けるべきパターン
 
@@ -108,7 +109,7 @@ export default function Component({ ... }: ComponentProps) {
 1. 型定義を確認（`AttendanceState`）
 2. useStateを追加
 3. 更新関数を実装
-4. localStorageへの保存を考慮
+4. Supabaseへの保存を考慮
 
 ## コード生成時のチェックリスト
 
@@ -150,9 +151,9 @@ export default function Component({ ... }: ComponentProps) {
 
 ## 重要な注意事項
 
-1. **日付を跨ぐ勤務時間の計算**: 現在の実装には問題がある（[IMPROVEMENTS.md](./IMPROVEMENTS.md)参照）
-2. **データ検証**: localStorageから読み込んだデータの型検証が必要
-3. **エラーハンドリング**: ストレージ操作のエラーハンドリングを強化
+1. **日付を跨ぐ勤務時間の計算**: 現在の実装には問題がある（[improvements.md](./docs/improvements.md)参照）
+2. **データ検証**: Supabaseから読み込んだデータの型検証が必要
+3. **エラーハンドリング**: データベース操作のエラーハンドリングを強化
 4. **既存のパターン**: 新しいコードは既存のコードパターンに従う
 
 ## 質問

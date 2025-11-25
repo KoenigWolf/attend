@@ -34,7 +34,7 @@ export const calculateMinutes = (start: string | undefined, end: string | undefi
 
 ### 2. データ検証の不足
 
-**問題**: Firestore から読み込んだデータの型検証が不十分です。不正なデータが保存されている場合、アプリケーションがクラッシュする可能性があります。
+**問題**: Supabase から読み込んだデータの型検証が不十分です。不正なデータが保存されている場合、アプリケーションがクラッシュする可能性があります。
 
 **改善案**:
 
@@ -143,7 +143,7 @@ export const calculateMinutes = (start: string | undefined, end: string | undefi
 
 ### 12. オフライン対応の強化
 
-**問題**: Firestore の基本的なオフライン対応はありますが、より堅牢な実装が必要です。
+**問題**: Supabase の基本的なオフライン対応はありますが、より堅牢な実装が必要です。
 
 **改善案**:
 
