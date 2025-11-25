@@ -53,10 +53,11 @@ export default function AttendanceSystem() {
     return state.records.find(r => r.date === getCurrentDate())
   }
 
-  const updateRecord = async (updates: Partial<AttendanceRecord>) => {
+  const updateRecord = async (updates: Partial<AttendanceRecord>, targetDate?: string) => {
     setSaving(true)
     try {
-      const records = await saveRecord(getCurrentDate(), updates)
+      const date = targetDate ?? getCurrentDate()
+      const records = await saveRecord(date, updates)
       syncState(records)
       setError(null)
     } catch (e: any) {
@@ -88,6 +89,10 @@ export default function AttendanceSystem() {
 
   const handleBreakEnd = () => {
     updateRecord({ breakEnd: getCurrentTime() })
+  }
+
+  const handleEditRecord = (date: string, updates: Partial<AttendanceRecord>) => {
+    return updateRecord(updates, date)
   }
 
   const todayRecord = getTodayRecord()
@@ -191,7 +196,11 @@ export default function AttendanceSystem() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <MonthlyCalendar records={state.records} />
-        <HistoryList records={state.records} />
+        <HistoryList
+          records={state.records}
+          isSaving={saving}
+          onEdit={handleEditRecord}
+        />
       </div>
     </div>
   )
