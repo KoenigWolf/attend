@@ -26,6 +26,7 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 
 - **フレームワーク**: Next.js 14 (App Router)
 - **言語**: TypeScript
+- **データベース**: Firestore (Firebase)
 - **スタイリング**: Tailwind CSS
 - **日付処理**: date-fns
 - **フォント**: Manrope (Google Fonts)
@@ -111,6 +112,7 @@ Attendance/
 
 - **[アーキテクチャ説明](./docs/architecture.md)** - システムの全体構造と設計思想
 - **[コード構造ガイド](./docs/code-structure.md)** - ファイル構成と各モジュールの説明
+- **[Firestore セットアップガイド](./docs/firestore-setup.md)** - Firestore Database のセットアップと使い方
 - **[デザインガイド](./docs/design-guide.md)** - UI/UX デザインのガイドライン
 - **[改善点リスト](./docs/improvements.md)** - 既知の改善点と優先順位
 - **[AI 開発ガイド](./docs/ai-development-guide.md)** - AI 開発者向けのガイドライン

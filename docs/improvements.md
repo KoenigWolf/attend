@@ -32,27 +32,9 @@ export const calculateMinutes = (start: string | undefined, end: string | undefi
 
 ---
 
-### 2. ストレージのエラーハンドリング不足
+### 2. データ検証の不足
 
-**問題**: `saveRecords`で localStorage への保存が失敗した場合のエラーハンドリングがありません。
-
-**現在のコード**:
-
-```5:9:src/utils/storage.ts
-export const saveRecords = (records: AttendanceRecord[]): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records))
-  }
-}
-```
-
-**改善案**: try-catch でエラーハンドリングを追加し、ユーザーに通知する仕組みを実装。
-
----
-
-### 3. データ検証の不足
-
-**問題**: localStorage から読み込んだデータの型検証がありません。不正なデータが保存されている場合、アプリケーションがクラッシュする可能性があります。
+**問題**: Firestore から読み込んだデータの型検証が不十分です。不正なデータが保存されている場合、アプリケーションがクラッシュする可能性があります。
 
 **改善案**:
 
@@ -62,7 +44,7 @@ export const saveRecords = (records: AttendanceRecord[]): void => {
 
 ---
 
-### 4. TypeScript 設定の警告
+### 3. TypeScript 設定の警告
 
 **問題**: `forceConsistentCasingInFileNames`が有効になっていません。
 
@@ -159,14 +141,15 @@ export const saveRecords = (records: AttendanceRecord[]): void => {
 
 ---
 
-### 12. データの永続化改善
+### 12. オフライン対応の強化
 
-**問題**: localStorage のみに依存しています。
+**問題**: Firestore の基本的なオフライン対応はありますが、より堅牢な実装が必要です。
 
 **改善案**:
 
-- IndexedDB への移行（大量データ対応）
-- クラウド同期機能（オプション）
+- オフライン時のデータキューイング
+- 同期状態の表示
+- 競合解決の実装
 
 ---
 
@@ -274,9 +257,8 @@ export const saveRecords = (records: AttendanceRecord[]): void => {
 ### Phase 1（即座に対応）
 
 1. 日付を跨ぐ勤務時間の計算修正
-2. ストレージのエラーハンドリング追加
-3. データ検証の実装
-4. TypeScript 設定の修正
+2. データ検証の実装
+3. TypeScript 設定の修正
 
 ### Phase 2（短期）
 

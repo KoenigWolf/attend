@@ -19,13 +19,13 @@ AI 開発者が以下を効率的に行えるようにする：
 - **言語**: TypeScript (strict mode)
 - **スタイリング**: Tailwind CSS
 - **日付処理**: date-fns
-- **状態管理**: React useState (localStorage 永続化)
+- **状態管理**: React useState (Firestore 永続化)
 
 ### アーキテクチャパターン
 
 - **コンポーネント構造**: プレゼンテーション層とコンテナ層の分離
 - **データフロー**: 単方向データフロー（親 → 子）
-- **状態管理**: コンポーネント内状態 + localStorage
+- **状態管理**: コンポーネント内状態 + Firestore
 
 ## 重要な設計原則
 
@@ -331,7 +331,7 @@ const getTime = (time: string | undefined): string => {
    const [state, setState] = useState<StateType>(initialValue);
    ```
 3. **更新関数を実装**
-4. **localStorage への保存を考慮**（必要に応じて）
+4. **Firestore への保存を考慮**（必要に応じて）
 
 ## デバッグのヒント
 

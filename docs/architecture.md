@@ -2,7 +2,7 @@
 
 ## 概要
 
-勤怠管理システムは、Next.js 14 の App Router を使用したクライアントサイドアプリケーションです。データはブラウザの localStorage に保存され、サーバーサイドの処理は不要です。
+勤怠管理システムは、Next.js 14 の App Router を使用したクライアントサイドアプリケーションです。データは Firestore Database に保存され、複数デバイス間で同期されます。
 
 ## アーキテクチャパターン
 
@@ -74,8 +74,8 @@ interface AttendanceState {
 
 #### storage.ts
 
-- `saveRecords()`: localStorage への保存
-- `loadRecords()`: localStorage からの読み込み
+- `saveRecord()`: Firestore への保存
+- `loadRecords()`: Firestore からの読み込み
 
 #### time.ts
 
@@ -117,7 +117,7 @@ interface AttendanceRecord {
    ↓
 5. 勤務時間を計算（退勤済みの場合）
    ↓
-6. saveRecords() でlocalStorageに保存
+6. saveRecord() で Firestore に保存
    ↓
 7. setState() で状態を更新
    ↓
@@ -131,7 +131,7 @@ interface AttendanceRecord {
    ↓
 2. useEffect が実行
    ↓
-3. loadRecords() でlocalStorageから読み込み
+3. loadRecords() で Firestore から読み込み
    ↓
 4. 今日の記録を検索
    ↓
@@ -147,7 +147,7 @@ interface AttendanceRecord {
 ### 現在のアプローチ
 
 - **React useState**: コンポーネント内の状態管理
-- **localStorage**: データの永続化
+- **Firestore**: データの永続化と同期
 - **Props Drilling**: 親から子へのデータ受け渡し
 
 ### 状態の更新パターン
@@ -192,7 +192,7 @@ useEffect(() => {
 
 - 時間フォーマット: `formatTime()`
 - 時間計算: `calculateMinutes()`
-- データ保存: `saveRecords()`
+- データ保存: `saveRecord()`
 
 ## パフォーマンス考慮事項
 
@@ -221,27 +221,28 @@ useEffect(() => {
    - `useAttendance()`: 出退勤ロジック
    - `useRecords()`: 記録管理ロジック
 
-3. **バックエンド連携**
+3. **認証機能の追加**
 
-   - API エンドポイントの追加
-   - 認証機能の追加
-   - クラウド同期
+   - Firebase Authentication の統合
+   - Firestore Security Rules の更新
+   - ユーザー別データ管理
 
-4. **データベース移行**
-   - IndexedDB への移行（大量データ対応）
-   - オフライン対応の強化
+4. **オフライン対応の強化**
+   - オフライン時のデータキューイング
+   - 同期状態の表示
+   - 競合解決の実装
 
 ## セキュリティ考慮事項
 
 ### 現在の実装
 
-- クライアントサイドのみの処理
-- localStorage への保存（ブラウザ依存）
+- クライアントサイドの処理
+- Firestore への保存（クラウドベース）
 
 ### 注意点
 
-- データはブラウザに依存（クリアされると消える）
-- サーバーサイドの検証なし
+- Firestore Security Rules で適切なアクセス制御を設定
+- 環境変数の管理（`.env.local`に保存）
 - XSS 対策は Next.js のデフォルト設定に依存
 
 ## テスト戦略

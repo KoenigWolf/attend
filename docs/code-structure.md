@@ -256,25 +256,30 @@ export interface AttendanceState {
 
 #### `storage.ts`
 
-**役割**: localStorage へのデータ保存・読み込み
+**役割**: Firestore へのデータ保存・読み込み
 
 **関数**:
 
 ```typescript
-// 記録を保存
-export const saveRecords = (records: AttendanceRecord[]): void
+// 記録を保存（非同期）
+export const saveRecord = async (
+  date: string,
+  updates: Partial<AttendanceRecord>
+): Promise<AttendanceRecord[]>
 
-// 記録を読み込み
-export const loadRecords = (): AttendanceRecord[]
+// 記録を読み込み（非同期）
+export const loadRecords = async (): Promise<AttendanceRecord[]>
 ```
 
 **実装の詳細**:
 
-- `typeof window !== 'undefined'`で SSR 対応
-- `JSON.stringify/parse`でシリアライズ
+- Firestore のコレクション `attendance_records` を使用
+- 日付（YYYY-MM-DD）をドキュメント ID として使用
+- 自動的に勤務時間・休憩時間を計算
+- `serverTimestamp()` でタイムスタンプを自動設定
 - エラーハンドリング（try-catch）
 
-**ストレージキー**: `'attendance_records'`
+**コレクション名**: `'attendance_records'`
 
 #### `time.ts`
 
@@ -321,7 +326,7 @@ export const formatMinutes = (minutes: number): string
    ↓
 4. 計算処理（勤務時間・休憩時間）
    ↓
-5. saveRecords() でlocalStorageに保存
+5. saveRecord() で Firestore に保存
    ↓
 6. setState() で状態を更新
    ↓
@@ -335,7 +340,7 @@ export const formatMinutes = (minutes: number): string
    ↓
 2. useEffect が実行
    ↓
-3. loadRecords() でlocalStorageから読み込み
+3. loadRecords() で Firestore から読み込み
    ↓
 4. 今日の記録を検索
    ↓

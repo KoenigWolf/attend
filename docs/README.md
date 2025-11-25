@@ -9,6 +9,7 @@ docs/
 ├── README.md                    # このファイル（ナビゲーション）
 ├── architecture.md              # システムアーキテクチャ
 ├── code-structure.md             # コード構造とファイル説明
+├── firestore-setup.md           # Firestore セットアップガイド
 ├── ai-development-guide.md      # AI開発者向けガイド
 ├── design-guide.md              # デザインガイドライン
 └── improvements.md             # 改善点リスト
@@ -50,7 +51,24 @@ docs/
 
 ---
 
-###  開発ガイド
+#### [firestore-setup.md](./firestore-setup.md)
+
+Firestore Database のセットアップと使い方を説明します。
+
+**内容**:
+
+- Firestore とは
+- セットアップ手順（Firebase プロジェクト作成、Firestore 有効化）
+- 環境変数の設定
+- データの保存・読み込み方法
+- データ構造
+- トラブルシューティング
+
+**読むべき人**: Firestore を初めて使う開発者、データベース設定を行う開発者
+
+---
+
+### 開発ガイド
 
 #### [ai-development-guide.md](./ai-development-guide.md)
 
@@ -69,7 +87,7 @@ AI（Cursor AI、GitHub Copilot など）が効率的に開発できるための
 
 ---
 
-###  デザイン
+### デザイン
 
 #### [design-guide.md](./design-guide.md)
 
@@ -88,7 +106,7 @@ UI/UX デザインのガイドラインとスタイリング規約です。
 
 ---
 
-###  プロジェクト管理
+### プロジェクト管理
 
 #### [improvements.md](./improvements.md)
 
@@ -133,6 +151,13 @@ UI/UX デザインのガイドラインとスタイリング規約です。
 1. **[code-structure.md](./code-structure.md)** - ファイル構造を確認
 2. **[design-guide.md](./design-guide.md)** - デザインガイドラインを確認
 3. **[ai-development-guide.md](./ai-development-guide.md)** - コーディング規約を確認
+
+### Firestore 設定時
+
+1. **[firestore-setup.md](./firestore-setup.md)** - Firestore セットアップガイドを読む
+2. Firebase Console でプロジェクトを作成
+3. 環境変数を設定
+4. セキュリティルールを設定
 
 ### バグ修正時
 
