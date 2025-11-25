@@ -1,14 +1,50 @@
 # 勤怠管理システム
 
-Next.js で構築されたモダンな勤怠管理システムです。
+Next.js で構築されたモダンな勤怠管理システムです。シンプルで使いやすい UI で、日々の出退勤を管理できます。
+
+## 目次
+
+- [機能](#機能)
+- [技術スタック](#技術スタック)
+- [セットアップ](#セットアップ)
+- [開発](#開発)
+- [プロジェクト構造](#プロジェクト構造)
+- [ドキュメント](#ドキュメント)
+- [ライセンス](#ライセンス)
+
+## 機能
+
+- 出勤・退勤の記録
+- 休憩時間の記録
+- 日次・月次の勤務時間の表示
+- カレンダービューでの勤務状況確認
+- 勤務履歴の一覧表示
+- データのローカルストレージへの自動保存
+- レスポンシブデザイン対応
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **日付処理**: date-fns
+- **フォント**: Manrope (Google Fonts)
 
 ## セットアップ
 
+### 前提条件
+
+- Node.js 18 以上
+- npm または yarn
+
+### インストール
+
 ```bash
+# 依存関係のインストール
 npm install
 ```
 
-## 開発サーバーの起動
+### 開発サーバーの起動
 
 ```bash
 npm run dev
@@ -16,9 +52,108 @@ npm run dev
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
 
-## 機能
+### ビルド
 
-- 出勤・退勤の記録
-- 休憩時間の記録
-- 日次・月次の勤務時間の表示
-- データのローカルストレージへの保存
+```bash
+# 本番用ビルド
+npm run build
+
+# 本番サーバーの起動
+npm start
+```
+
+### リント
+
+```bash
+npm run lint
+```
+
+## プロジェクト構造
+
+```
+Attendance/
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── layout.tsx    # ルートレイアウト
+│   │   ├── page.tsx      # ホームページ
+│   │   └── globals.css   # グローバルスタイル
+│   ├── components/        # Reactコンポーネント
+│   │   ├── AttendanceSystem.tsx  # メインコンポーネント
+│   │   ├── AttendanceButton.tsx  # 出退勤ボタン
+│   │   ├── TodaySummary.tsx      # 本日のサマリー
+│   │   ├── MonthlyCalendar.tsx   # 月次カレンダー
+│   │   └── HistoryList.tsx        # 履歴リスト
+│   ├── types/            # TypeScript型定義
+│   │   └── attendance.ts
+│   └── utils/            # ユーティリティ関数
+│       ├── storage.ts    # ローカルストレージ操作
+│       └── time.ts       # 時間処理
+├── docs/                 # ドキュメント
+│   ├── architecture.md    # アーキテクチャ説明
+│   ├── code-structure.md # コード構造ガイド
+│   ├── ai-development-guide.md # AI開発ガイド
+│   ├── design-guide.md   # デザインガイドライン
+│   └── improvements.md    # 改善点リスト
+└── CONTRIBUTING.md       # コントリビューションガイド
+```
+
+## ドキュメント
+
+詳細なドキュメントは以下のファイルを参照してください：
+
+- **[アーキテクチャ説明](./docs/architecture.md)** - システムの全体構造と設計思想
+- **[コード構造ガイド](./docs/code-structure.md)** - ファイル構成と各モジュールの説明
+- **[デザインガイド](./docs/design-guide.md)** - UI/UX デザインのガイドライン
+- **[改善点リスト](./docs/improvements.md)** - 既知の改善点と優先順位
+- **[AI 開発ガイド](./docs/ai-development-guide.md)** - AI 開発者向けのガイドライン
+- **[コントリビューションガイド](./CONTRIBUTING.md)** - 開発への参加方法
+
+## デザイン
+
+モダンでクリーンなデザインを採用しています。ガラスモーフィズム効果とグラデーション背景を使用した、視覚的に魅力的な UI です。
+
+詳細は [design-guide.md](./docs/design-guide.md) を参照してください。
+
+## 開発
+
+### コードスタイル
+
+- TypeScript の strict モードを有効化
+- ESLint を使用したコード品質チェック
+- Prettier（推奨）によるコードフォーマット
+
+### ブランチ戦略
+
+- `main`: 本番環境用ブランチ
+- `develop`: 開発用ブランチ（推奨）
+- `feature/*`: 機能追加用ブランチ
+
+### コミットメッセージ
+
+以下の形式を推奨します：
+
+```
+feat: 新機能の追加
+fix: バグ修正
+docs: ドキュメント更新
+style: コードスタイルの変更
+refactor: リファクタリング
+test: テストの追加・修正
+chore: その他の変更
+```
+
+## 既知の問題
+
+現在の改善点については [improvements.md](./docs/improvements.md) を参照してください。
+
+## ライセンス
+
+このプロジェクトはプライベートプロジェクトです。
+
+## コントリビューション
+
+コントリビューションを歓迎します！詳細は [CONTRIBUTING.md](./CONTRIBUTING.md) を参照してください。
+
+## サポート
+
+問題や質問がある場合は、Issue を作成してください。

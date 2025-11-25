@@ -1,0 +1,161 @@
+# Cursor AI Rules for Attendance System
+
+このファイルは、Cursor AIがこのプロジェクトで効率的に開発できるようにするためのルールを定義します。
+
+## プロジェクト概要
+
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript (strict mode)
+- **スタイリング**: Tailwind CSS
+- **状態管理**: React useState + localStorage
+- **日付処理**: date-fns
+
+## コーディング規約
+
+### 型安全性
+- すべての関数とコンポーネントに適切な型を定義する
+- `any`型の使用を避ける
+- オプショナルチェーンを適切に使用する
+
+### 命名規則
+- コンポーネント: PascalCase (`AttendanceButton`)
+- 関数: camelCase (`getCurrentTime`)
+- 型・インターフェース: PascalCase (`AttendanceRecord`)
+- 定数: UPPER_SNAKE_CASE (`STORAGE_KEY`)
+
+### ファイル構造
+- コンポーネント: `src/components/`
+- 型定義: `src/types/`
+- ユーティリティ: `src/utils/`
+- 1ファイル1コンポーネント（デフォルトエクスポート）
+
+### コンポーネント構造
+```typescript
+'use client'  // 必要に応じて
+
+import { ... } from '...'
+
+interface ComponentProps {
+  // Propsの型定義
+}
+
+export default function Component({ ... }: ComponentProps) {
+  // 実装
+  return (
+    // JSX
+  )
+}
+```
+
+## スタイリング
+
+### Tailwind CSS
+- すべてのスタイリングにTailwind CSSを使用
+- レスポンシブデザイン: モバイルファースト (`sm:`, `md:`, `lg:`)
+- デザインシステムに準拠: [DESIGN_GUIDE.md](./DESIGN_GUIDE.md) を参照
+
+### デザインパターン
+- ガラスモーフィズム: `bg-white/80 backdrop-blur`
+- 角丸: `rounded-2xl`, `rounded-3xl`
+- 影: `shadow-sm`, `shadow-md`
+- ホバー効果: `hover:-translate-y-0.5`
+
+## エラーハンドリング
+
+- 早期リターンを使用する
+- try-catchでエラーハンドリングを行う
+- エラーログを記録する（console.error）
+- ユーザーに適切なフォールバックを提供する
+
+## 状態管理
+
+- React useStateを使用
+- localStorageへの保存は`utils/storage.ts`を使用
+- 状態更新はイミュータブルに行う
+
+## ドキュメント参照
+
+コード生成時は、以下のドキュメントを参照：
+1. [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - アーキテクチャの理解
+2. [CODE_STRUCTURE.md](./docs/CODE_STRUCTURE.md) - ファイル構造の理解
+3. [DESIGN_GUIDE.md](./DESIGN_GUIDE.md) - スタイリングガイド
+4. [AI_DEVELOPMENT_GUIDE.md](./docs/AI_DEVELOPMENT_GUIDE.md) - AI開発ガイド
+5. [IMPROVEMENTS.md](./IMPROVEMENTS.md) - 既知の問題と改善点
+
+## 避けるべきパターン
+
+- 直接的なDOM操作（Reactの方法を使用）
+- グローバル変数の使用（状態管理を使用）
+- 副作用の混在（関数を分離）
+- 型の省略（常に型を定義）
+
+## よくあるタスク
+
+### 新しいコンポーネントを追加
+1. `src/components/ComponentName.tsx`を作成
+2. 型定義を追加
+3. 基本構造を実装
+4. Tailwind CSSでスタイリング
+5. 親コンポーネントに統合
+
+### 新しいユーティリティ関数を追加
+1. 適切なファイルを選択（`storage.ts` or `time.ts`）
+2. 型定義を追加
+3. エラーハンドリングを追加
+4. 実装
+
+### 状態管理を追加
+1. 型定義を確認（`AttendanceState`）
+2. useStateを追加
+3. 更新関数を実装
+4. localStorageへの保存を考慮
+
+## コード生成時のチェックリスト
+
+- [ ] 型定義があるか
+- [ ] エラーハンドリングがあるか
+- [ ] 命名規則に従っているか
+- [ ] 既存のパターンに従っているか
+- [ ] デザインシステムに準拠しているか
+- [ ] アクセシビリティを考慮しているか（aria-label等）
+- [ ] レスポンシブデザインを考慮しているか
+
+## 言語
+
+- すべてのコメントとドキュメントは日本語で記述
+- コード内のコメントも日本語で記述
+- 変数名と関数名は英語で記述
+
+## パフォーマンス
+
+- 不要な再レンダリングを避ける
+- useMemoやReact.memoを適切に使用（必要に応じて）
+- 大きな配列操作は最小限に
+
+## アクセシビリティ
+
+- セマンティックHTMLを使用
+- aria-labelを適切に使用
+- キーボードナビゲーションを考慮
+- コントラスト比を考慮
+
+## コミットメッセージ
+
+変更を提案する際は、適切なコミットメッセージ形式を使用：
+- `feat: 新機能の追加`
+- `fix: バグ修正`
+- `docs: ドキュメント更新`
+- `style: コードスタイルの変更`
+- `refactor: リファクタリング`
+
+## 重要な注意事項
+
+1. **日付を跨ぐ勤務時間の計算**: 現在の実装には問題がある（[IMPROVEMENTS.md](./IMPROVEMENTS.md)参照）
+2. **データ検証**: localStorageから読み込んだデータの型検証が必要
+3. **エラーハンドリング**: ストレージ操作のエラーハンドリングを強化
+4. **既存のパターン**: 新しいコードは既存のコードパターンに従う
+
+## 質問
+
+不明な点がある場合は、ドキュメントを確認するか、既存のコードを参照してください。
+
