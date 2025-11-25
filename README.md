@@ -116,6 +116,7 @@ Attendance/
 - **[アーキテクチャ説明](./docs/architecture.md)** - システムの全体構造と設計思想
 - **[コード構造ガイド](./docs/code-structure.md)** - ファイル構成と各モジュールの説明
 - **[Supabase セットアップガイド](./docs/supabase-setup.md)** - Supabase Database のセットアップと使い方
+- **[Supabase 実践ガイド](./docs/supabase-usage.md)** - Supabase の実践的な使い方とコード例
 - **[デザインガイド](./docs/design-guide.md)** - UI/UX デザインのガイドライン
 - **[改善点リスト](./docs/improvements.md)** - 既知の改善点と優先順位
 - **[AI 開発ガイド](./docs/ai-development-guide.md)** - AI 開発者向けのガイドライン

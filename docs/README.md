@@ -10,6 +10,7 @@ docs/
 ├── architecture.md              # システムアーキテクチャ
 ├── code-structure.md             # コード構造とファイル説明
 ├── supabase-setup.md            # Supabase セットアップガイド
+├── supabase-usage.md            # Supabase 実践ガイド
 ├── ai-development-guide.md      # AI開発者向けガイド
 ├── design-guide.md              # デザインガイドライン
 └── improvements.md             # 改善点リスト
@@ -65,6 +66,22 @@ Supabase Database のセットアップと使い方を説明します。
 - トラブルシューティング
 
 **読むべき人**: Supabase を初めて使う開発者、データベース設定を行う開発者
+
+---
+
+#### [supabase-usage.md](./supabase-usage.md)
+
+Supabase の実践的な使い方を説明します。
+
+**内容**:
+
+- クイックスタート（5 分で始める）
+- 基本的な使い方（データの読み書き）
+- よくある操作（今日の記録、月間集計など）
+- 実践的な使用例
+- トラブルシューティング
+
+**読むべき人**: Supabase の使い方がわからない開発者、実際にコードを書く開発者
 
 ---
 
@@ -155,10 +172,11 @@ UI/UX デザインのガイドラインとスタイリング規約です。
 ### Supabase 設定時
 
 1. **[supabase-setup.md](./supabase-setup.md)** - Supabase セットアップガイドを読む
-2. Supabase Dashboard でプロジェクトを作成
-3. テーブルを作成（SQL を実行）
-4. 環境変数を設定
-5. RLS ポリシーを設定
+2. **[supabase-usage.md](./supabase-usage.md)** - Supabase 実践ガイドを読む（使い方がわからない場合）
+3. Supabase Dashboard でプロジェクトを作成
+4. テーブルを作成（SQL を実行）
+5. 環境変数を設定
+6. RLS ポリシーを設定
 
 ### バグ修正時
 
