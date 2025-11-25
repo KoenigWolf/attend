@@ -24,11 +24,12 @@ export default function AttendanceSystem() {
   const syncState = (records: AttendanceRecord[]) => {
     const today = getCurrentDate()
     const todayRecord = records.find(r => r.date === today)
+    const hasOpenBreak = todayRecord?.breaks?.some(b => !b.end) ?? false
 
     setState({
       records,
       isClockedIn: !!todayRecord?.clockIn && !todayRecord?.clockOut,
-      isOnBreak: !!todayRecord?.breakStart && !todayRecord?.breakEnd,
+      isOnBreak: hasOpenBreak,
     })
   }
 
@@ -49,9 +50,8 @@ export default function AttendanceSystem() {
     fetchRecords()
   }, [])
 
-  const getTodayRecord = (): AttendanceRecord | undefined => {
-    return state.records.find(r => r.date === getCurrentDate())
-  }
+  const getTodayRecord = (): AttendanceRecord | undefined =>
+    state.records.find(r => r.date === getCurrentDate())
 
   const updateRecord = async (updates: Partial<AttendanceRecord>, targetDate?: string) => {
     setSaving(true)
@@ -84,11 +84,26 @@ export default function AttendanceSystem() {
   }
 
   const handleBreakStart = () => {
-    updateRecord({ breakStart: getCurrentTime() })
+    const today = getTodayRecord()
+    const breaks = [...(today?.breaks ?? [])]
+    breaks.push({ start: getCurrentTime() })
+    updateRecord({ breaks })
   }
 
   const handleBreakEnd = () => {
-    updateRecord({ breakEnd: getCurrentTime() })
+    const today = getTodayRecord()
+    if (!today?.breaks || today.breaks.length === 0) {
+      setError('開始中の休憩がありません。')
+      return
+    }
+    const breaks = [...today.breaks]
+    const lastIndex = breaks.map((b, idx) => ({ ...b, idx })).reverse().find(item => !item.end)?.idx
+    if (lastIndex === undefined) {
+      setError('開始中の休憩がありません。')
+      return
+    }
+    breaks[lastIndex] = { ...breaks[lastIndex], end: getCurrentTime() }
+    updateRecord({ breaks })
   }
 
   const handleEditRecord = (date: string, updates: Partial<AttendanceRecord>) => {

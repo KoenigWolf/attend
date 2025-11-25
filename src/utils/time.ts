@@ -1,4 +1,5 @@
 import { format, parse, differenceInMinutes, isValid } from 'date-fns'
+import type { BreakPeriod } from '@/types/attendance'
 
 export const formatTime = (time: string | undefined): string => {
   if (!time) return '--:--'
@@ -41,3 +42,10 @@ export const formatMinutes = (minutes: number): string => {
   return `${hours}時間${mins}分`
 }
 
+export const calculateTotalBreakMinutes = (breaks?: BreakPeriod[]): number => {
+  if (!breaks) return 0
+  return breaks.reduce((sum, brk) => {
+    if (!brk.start || !brk.end) return sum
+    return sum + calculateMinutes(brk.start, brk.end)
+  }, 0)
+}

@@ -14,11 +14,14 @@ interface HistoryListProps {
 
 export default function HistoryList({ records, isSaving, onEdit }: HistoryListProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    clockIn: string
+    clockOut: string
+    breaks: { start: string; end: string }[]
+  }>({
     clockIn: '',
     clockOut: '',
-    breakStart: '',
-    breakEnd: '',
+    breaks: [],
   })
   const [error, setError] = useState<string | null>(null)
 
@@ -31,8 +34,8 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
     setForm({
       clockIn: record.clockIn ?? '',
       clockOut: record.clockOut ?? '',
-      breakStart: record.breakStart ?? '',
-      breakEnd: record.breakEnd ?? '',
+      breaks: record.breaks?.map(b => ({ start: b.start, end: b.end ?? '' })) ??
+        (record.breakStart ? [{ start: record.breakStart, end: record.breakEnd ?? '' }] : []),
     })
     setError(null)
   }
@@ -45,11 +48,14 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   const handleSave = async (record: AttendanceRecord) => {
     setError(null)
     try {
+      const sanitizedBreaks = form.breaks
+        .filter(b => b.start)
+        .map(b => ({ start: b.start, end: b.end || undefined }))
+
       await onEdit(record.date, {
         clockIn: form.clockIn || undefined,
         clockOut: form.clockOut || undefined,
-        breakStart: form.breakStart || undefined,
-        breakEnd: form.breakEnd || undefined,
+        breaks: sanitizedBreaks,
       })
       setEditingId(null)
     } catch (e) {
@@ -68,14 +74,23 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
         <span className="text-slate-400">退勤: </span>
         <span className="font-semibold text-slate-800">{formatTime(record.clockOut)}</span>
       </div>
-      {record.breakStart && (
-        <div>
-          <span className="text-slate-400">休憩: </span>
-          <span className="font-semibold text-slate-800">
-            {formatTime(record.breakStart)} - {formatTime(record.breakEnd)}
-          </span>
-        </div>
-      )}
+      <div className="sm:col-span-2">
+        <span className="text-slate-400">休憩: </span>
+        {record.breaks && record.breaks.length > 0 ? (
+          <div className="mt-1 flex flex-wrap gap-2">
+            {record.breaks.map((brk, idx) => (
+              <span
+                key={`${brk.start}-${idx}`}
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold"
+              >
+                {formatTime(brk.start)} - {formatTime(brk.end)}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span className="font-semibold text-slate-800">なし</span>
+        )}
+      </div>
       {record.totalBreakTime !== undefined && record.totalBreakTime > 0 && (
         <div>
           <span className="text-slate-400">休憩時間: </span>
@@ -88,17 +103,15 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   const renderEditor = (record: AttendanceRecord) => (
     <div className="space-y-3">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        {[
+        {([
           { label: '出勤', key: 'clockIn' as const },
           { label: '退勤', key: 'clockOut' as const },
-          { label: '休憩開始', key: 'breakStart' as const },
-          { label: '休憩終了', key: 'breakEnd' as const },
-        ].map(field => (
+        ] as const).map(field => (
           <label key={field.key} className="flex flex-col gap-1 text-slate-600">
             <span className="text-xs font-semibold text-slate-500">{field.label}</span>
             <input
               type="time"
-              value={form[field.key as keyof typeof form]}
+              value={form[field.key]}
               onChange={e =>
                 setForm(prev => ({ ...prev, [field.key]: e.target.value }))
               }
@@ -106,6 +119,71 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
             />
           </label>
         ))}
+
+        <div className="sm:col-span-2 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">休憩（複数可）</span>
+            <button
+              type="button"
+              onClick={() =>
+                setForm(prev => ({
+                  ...prev,
+                  breaks: [...prev.breaks, { start: '', end: '' }],
+                }))
+              }
+              className="text-xs font-semibold text-blue-700 px-2 py-1 rounded-md bg-blue-50 border border-blue-100 hover:bg-blue-100"
+            >
+              追加
+            </button>
+          </div>
+          <div className="flex flex-col gap-2">
+            {form.breaks.length === 0 && (
+              <p className="text-xs text-slate-400">休憩を追加してください</p>
+            )}
+            {form.breaks.map((brk, idx) => (
+              <div key={idx} className="grid grid-cols-2 gap-2 items-center">
+                <input
+                  type="time"
+                  value={brk.start}
+                  onChange={e =>
+                    setForm(prev => {
+                      const next = [...prev.breaks]
+                      next[idx] = { ...next[idx], start: e.target.value }
+                      return { ...prev, breaks: next }
+                    })
+                  }
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={brk.end}
+                    onChange={e =>
+                      setForm(prev => {
+                        const next = [...prev.breaks]
+                        next[idx] = { ...next[idx], end: e.target.value }
+                        return { ...prev, breaks: next }
+                      })
+                    }
+                    className="rounded-lg border border-slate-200 px-3 py-2 text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-200 w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm(prev => ({
+                        ...prev,
+                        breaks: prev.breaks.filter((_, i) => i !== idx),
+                      }))
+                    }
+                    className="text-xs text-slate-500 px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50"
+                  >
+                    削除
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <button

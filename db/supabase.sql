@@ -5,11 +5,16 @@ create table if not exists public.attendance_records (
   clock_out text,
   break_start text,
   break_end text,
+  break_sessions jsonb default '[]'::jsonb,
   total_work_time integer,
   total_break_time integer,
   created_at timestamptz default timezone('utc'::text, now()),
   updated_at timestamptz default timezone('utc'::text, now())
 );
+
+-- For existing tables, ensure the break_sessions column exists
+alter table public.attendance_records
+  add column if not exists break_sessions jsonb default '[]'::jsonb;
 
 create or replace function public.attendance_records_updated_at()
 returns trigger as $$

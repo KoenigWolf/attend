@@ -19,7 +19,7 @@ Next.js で構築されたモダンな勤怠管理システムです。シンプ
 - 日次・月次の勤務時間の表示
 - カレンダービューでの勤務状況確認
 - 勤務履歴の一覧表示
-- 出退勤・休憩時間の後編集（モバイルでも見やすいフォーム）
+- 複数回の休憩記録と後編集（モバイルでも見やすいフォーム）
 - データの Supabase (PostgreSQL) への保存
 - レスポンシブデザイン対応
 
@@ -49,7 +49,7 @@ npm install
 ### Supabase の準備（必須）
 
 1. Supabase プロジェクトを作成し、`.env.example` を参考に `.env.local` に `NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_ANON_KEY` を設定。
-2. Supabase の SQL エディタで `db/supabase.sql` を実行して `attendance_records` テーブルを作成。
+2. Supabase の SQL エディタで `db/supabase.sql` を実行して `attendance_records` テーブルを作成（複数休憩用の `break_sessions` 列を含みます）。
 3. `npm install` を実行（`@supabase/supabase-js` を利用します）。
 4. RLS を有効化したままの場合は、匿名キーで read/write できるポリシーを開発用に追加するか、適切な認証を設定してください。
 
