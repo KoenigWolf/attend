@@ -59,9 +59,16 @@ export default function AttendanceSystem() {
       const records = await saveRecord(getCurrentDate(), updates)
       syncState(records)
       setError(null)
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to save record', e)
-      setError('記録の保存に失敗しました。時間をおいて再度お試しください。')
+      const errorMessage = e?.message || e?.code || '不明なエラー'
+      console.error('Error details:', {
+        message: e?.message,
+        code: e?.code,
+        details: e?.details,
+        hint: e?.hint,
+      })
+      setError(`記録の保存に失敗しました: ${errorMessage}`)
     } finally {
       setSaving(false)
     }

@@ -25,3 +25,45 @@ before update on public.attendance_records
 for each row execute function public.attendance_records_updated_at();
 
 alter table public.attendance_records enable row level security;
+
+-- Development-friendly RLS policies (anon key). Adjust or tighten for production.
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'attendance_records'
+      and policyname = 'Allow anon select'
+  ) then
+    create policy "Allow anon select"
+      on public.attendance_records
+      for select
+      using (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'attendance_records'
+      and policyname = 'Allow anon insert'
+  ) then
+    create policy "Allow anon insert"
+      on public.attendance_records
+      for insert
+      with check (true);
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'attendance_records'
+      and policyname = 'Allow anon update'
+  ) then
+    create policy "Allow anon update"
+      on public.attendance_records
+      for update
+      using (true)
+      with check (true);
+  end if;
+end
+$$;
