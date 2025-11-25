@@ -55,7 +55,7 @@ const computeTotals = (record: AttendanceRecord) => {
 const loadFromSupabase = async (): Promise<AttendanceRecord[]> => {
   const supabase = getSupabaseClient()
   const { data, error } = await supabase
-    .from<SupabaseRow>('attendance_records')
+    .from('attendance_records')
     .select('*')
     .order('date', { ascending: false })
 
@@ -63,7 +63,7 @@ const loadFromSupabase = async (): Promise<AttendanceRecord[]> => {
     throw error
   }
 
-  return (data || []).map(toSupabaseRecord)
+  return ((data as SupabaseRow[] | null) || []).map(toSupabaseRecord)
 }
 
 const saveToSupabase = async (
@@ -72,7 +72,7 @@ const saveToSupabase = async (
 ): Promise<AttendanceRecord[]> => {
   const supabase = getSupabaseClient()
   const { data: existing, error: fetchError } = await supabase
-    .from<SupabaseRow>('attendance_records')
+    .from('attendance_records')
     .select('*')
     .eq('date', date)
     .maybeSingle()
