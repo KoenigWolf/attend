@@ -39,9 +39,16 @@ export default function AttendanceSystem() {
         const records = await loadRecords()
         syncState(records)
         setError(null)
-      } catch (e) {
+      } catch (e: any) {
         console.error('Failed to load records', e)
-        setError('記録の取得に失敗しました。再度お試しください。')
+        const errorMessage = e?.message || e?.code || '不明なエラー'
+        console.error('Error details:', {
+          message: e?.message,
+          code: e?.code,
+          details: e?.details,
+          hint: e?.hint,
+        })
+        setError(`記録の取得に失敗しました: ${errorMessage}`)
       } finally {
         setLoading(false)
       }
@@ -80,7 +87,20 @@ export default function AttendanceSystem() {
   }
 
   const handleClockOut = () => {
-    updateRecord({ clockOut: getCurrentTime() })
+    const today = getTodayRecord()
+    const now = getCurrentTime()
+    let breaks = [...(today?.breaks ?? [])]
+
+    // クローズされていない休憩があれば自動で締める
+    const lastOpenIndex = breaks.map((b, idx) => ({ ...b, idx })).reverse().find(item => !item.end)?.idx
+    if (lastOpenIndex !== undefined) {
+      breaks[lastOpenIndex] = { ...breaks[lastOpenIndex], end: now }
+    }
+
+    updateRecord({
+      clockOut: now,
+      breaks,
+    })
   }
 
   const handleBreakStart = () => {
@@ -106,6 +126,15 @@ export default function AttendanceSystem() {
     updateRecord({ breaks })
   }
 
+  const latestBreak = () => {
+    const today = getTodayRecord()
+    if (!today?.breaks || today.breaks.length === 0) return { start: undefined, end: undefined }
+    const last = today.breaks[today.breaks.length - 1]
+    return { start: last.start, end: last.end }
+  }
+
+  const lastBreak = latestBreak()
+
   const handleEditRecord = (date: string, updates: Partial<AttendanceRecord>) => {
     return updateRecord(updates, date)
   }
@@ -124,35 +153,35 @@ export default function AttendanceSystem() {
   const isBusy = loading || saving
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5">
-      <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-6 sm:p-6">
+    <div className="mx-auto space-y-5 max-w-7xl">
+      <div className="p-6 rounded-3xl border shadow-sm backdrop-blur bg-white/80 border-slate-100 sm:p-6">
         <div className="flex flex-col gap-4">
-          <div className="inline-flex items-center self-start rounded-full px-3 py-1 bg-blue-50 text-blue-700 text-sm font-semibold">
+          <div className="inline-flex items-center self-start px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-50 rounded-full">
             デイリートラッカー
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl text-slate-900">
                 勤怠管理システム
               </h1>
-              <p className="text-slate-500 mt-1 text-sm sm:text-base">
+              <p className="mt-1 text-sm text-slate-500 sm:text-base">
                 シンプルで見やすく、日々の出退勤を管理します。
               </p>
             </div>
-            <div className="flex flex-col items-start sm:items-end gap-2">
-              <div className="text-slate-500 text-sm">今日の日付</div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-inner">
+            <div className="flex flex-col gap-2 items-start sm:items-end">
+              <div className="text-sm text-slate-500">今日の日付</div>
+              <div className="flex gap-2 items-center">
+                <span className="px-4 py-2 text-sm font-semibold rounded-full shadow-inner bg-slate-100 text-slate-700">
                   {format(new Date(), 'yyyy年MM月dd日 (E)', { locale: ja })}
                 </span>
-                <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusTone}`}>
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${statusTone}`}>
                   {statusLabel}
                 </span>
               </div>
             </div>
           </div>
           {error && (
-            <div className="text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+            <div className="px-4 py-3 text-sm text-amber-700 bg-amber-50 rounded-xl border border-amber-100">
               {error}
             </div>
           )}
@@ -164,11 +193,11 @@ export default function AttendanceSystem() {
           <TodaySummary record={todayRecord} />
         </div>
 
-        <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5 flex flex-col gap-3">
+        <div className="flex flex-col gap-3 p-5 rounded-3xl border shadow-sm backdrop-blur bg-white/80 border-slate-100">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Actions</p>
-            <h3 className="text-xl font-bold text-slate-900 mt-1">出退勤を記録</h3>
-            <p className="text-sm text-slate-500 mt-1">
+            <h3 className="mt-1 text-xl font-bold text-slate-900">出退勤を記録</h3>
+            <p className="mt-1 text-sm text-slate-500">
               現在の勤務状態に合わせてボタンが有効化されます。
             </p>
           </div>
@@ -193,14 +222,14 @@ export default function AttendanceSystem() {
               onClick={handleBreakStart}
               disabled={isBusy || !state.isClockedIn || state.isOnBreak || !!todayRecord?.clockOut}
               variant="warning"
-              time={todayRecord?.breakStart}
+              time={lastBreak.start}
             />
             <AttendanceButton
               label="休憩終了"
               onClick={handleBreakEnd}
               disabled={isBusy || !state.isOnBreak}
               variant="info"
-              time={todayRecord?.breakEnd}
+              time={lastBreak.end}
             />
           </div>
           {loading && (

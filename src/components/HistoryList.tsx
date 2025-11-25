@@ -65,7 +65,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   }
 
   const renderDisplay = (record: AttendanceRecord) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600">
+    <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2 text-slate-600">
       <div>
         <span className="text-slate-400">出勤: </span>
         <span className="font-semibold text-slate-800">{formatTime(record.clockIn)}</span>
@@ -77,11 +77,11 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
       <div className="sm:col-span-2">
         <span className="text-slate-400">休憩: </span>
         {record.breaks && record.breaks.length > 0 ? (
-          <div className="mt-1 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-1">
             {record.breaks.map((brk, idx) => (
               <span
                 key={`${brk.start}-${idx}`}
-                className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold"
+                className="inline-flex gap-1 items-center px-3 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-full"
               >
                 {formatTime(brk.start)} - {formatTime(brk.end)}
               </span>
@@ -104,7 +104,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
 
   const renderEditor = (record: AttendanceRecord) => (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+      <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
         {([
           { label: '出勤', key: 'clockIn' as const },
           { label: '退勤', key: 'clockOut' as const },
@@ -117,13 +117,13 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
               onChange={e =>
                 setForm(prev => ({ ...prev, [field.key]: e.target.value }))
               }
-              className="rounded-lg border border-slate-200 px-3 py-2 text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="px-3 py-2 rounded-lg border shadow-inner border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </label>
         ))}
 
-        <div className="sm:col-span-2 space-y-2">
-          <div className="flex items-center justify-between">
+        <div className="space-y-2 sm:col-span-2">
+          <div className="flex justify-between items-center">
             <span className="text-xs font-semibold text-slate-500">休憩（複数可）</span>
             <button
               type="button"
@@ -133,7 +133,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                   breaks: [...prev.breaks, { start: '', end: '' }],
                 }))
               }
-              className="text-xs font-semibold text-blue-700 px-2 py-1 rounded-md bg-blue-50 border border-blue-100 hover:bg-blue-100"
+              className="px-2 py-1 text-xs font-semibold text-blue-700 bg-blue-50 rounded-md border border-blue-100 hover:bg-blue-100"
             >
               追加
             </button>
@@ -154,9 +154,10 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                       return { ...prev, breaks: next }
                     })
                   }
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  aria-label={`休憩${idx + 1}の開始時刻`}
+                  className="px-3 py-2 rounded-lg border shadow-inner border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 />
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   <input
                     type="time"
                     value={brk.end}
@@ -167,7 +168,8 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                         return { ...prev, breaks: next }
                       })
                     }
-                    className="rounded-lg border border-slate-200 px-3 py-2 text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-200 w-full"
+                    aria-label={`休憩${idx + 1}の終了時刻`}
+                    className="px-3 py-2 w-full rounded-lg border shadow-inner border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                   />
                   <button
                     type="button"
@@ -177,7 +179,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                         breaks: prev.breaks.filter((_, i) => i !== idx),
                       }))
                     }
-                    className="text-xs text-slate-500 px-2 py-1 border border-slate-200 rounded-md hover:bg-slate-50"
+                    className="px-2 py-1 text-xs rounded-md border text-slate-500 border-slate-200 hover:bg-slate-50"
                   >
                     削除
                   </button>
@@ -187,24 +189,24 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
           </div>
         </div>
       </div>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+      <div className="flex flex-col gap-2 items-stretch sm:flex-row sm:items-center">
         <button
           onClick={() => handleSave(record)}
           disabled={isSaving}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
+          className="px-4 py-2 w-full text-sm font-semibold text-white bg-blue-600 rounded-lg disabled:opacity-70 disabled:cursor-not-allowed sm:w-auto"
         >
           保存
         </button>
         <button
           onClick={cancelEdit}
           disabled={isSaving}
-          className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
+          className="px-3 py-2 w-full text-sm font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed sm:w-auto"
         >
           キャンセル
         </button>
       </div>
       {error && (
-        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+        <p className="px-3 py-2 text-xs text-amber-700 bg-amber-50 rounded-lg border border-amber-100">
           {error}
         </p>
       )}
@@ -212,8 +214,8 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   )
 
   return (
-    <div className="bg-white/80 backdrop-blur rounded-3xl shadow-sm border border-slate-100 p-5">
-      <div className="flex items-baseline justify-between mb-3">
+    <div className="p-5 rounded-3xl border shadow-sm backdrop-blur bg-white/80 border-slate-100">
+      <div className="flex justify-between items-baseline mb-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">History</p>
           <h2 className="text-xl font-bold text-slate-900">勤務履歴</h2>
@@ -224,7 +226,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
       </div>
       <div className="space-y-3 max-h-[70vh] md:max-h-96 overflow-y-auto pr-1">
         {sortedRecords.length === 0 ? (
-          <div className="text-center text-slate-400 py-10 border border-dashed border-slate-200 rounded-2xl bg-slate-50">
+          <div className="py-10 text-center rounded-2xl border border-dashed text-slate-400 border-slate-200 bg-slate-50">
             まだ記録がありません
           </div>
         ) : (
@@ -239,7 +241,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                     locale: ja,
                   })}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   {record.totalWorkTime !== undefined && (
                     <div className="text-base font-bold text-blue-700">
                       {formatMinutes(record.totalWorkTime)}
@@ -247,7 +249,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
                   )}
                   <button
                     onClick={() => startEdit(record)}
-                    className="text-xs font-semibold text-blue-700 px-3 py-1 border border-blue-100 rounded-lg bg-blue-50 hover:bg-blue-100 transition"
+                    className="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-50 rounded-lg border border-blue-100 transition hover:bg-blue-100"
                     disabled={isSaving}
                   >
                     編集

@@ -1,25 +1,54 @@
 import { AttendanceRecord, BreakPeriod } from '@/types/attendance'
 import { calculateMinutes, calculateTotalBreakMinutes } from '@/utils/time'
+import { parseISO, format } from 'date-fns'
+import { randomUUID } from 'crypto'
 import { getSupabaseClient } from './supabaseClient'
 
 type SupabaseRow = {
   id: string
-  date: string
+  work_date: string
   clock_in: string | null
   clock_out: string | null
   break_start: string | null // legacy
   break_end: string | null // legacy
-  break_sessions: BreakPeriod[] | string | null
+  break_sessions: { start: string | null; end: string | null }[] | string | null
   total_work_time: number | null
   total_break_time: number | null
 }
 
-const normalizeBreaks = (value: SupabaseRow['break_sessions'], fallbackStart?: string | null, fallbackEnd?: string | null): BreakPeriod[] => {
-  if (Array.isArray(value)) return value as BreakPeriod[]
+const toHHmm = (iso?: string | null): string | undefined => {
+  if (!iso) return undefined
+  try {
+    return format(parseISO(iso), 'HH:mm')
+  } catch {
+    return undefined
+  }
+}
+
+const normalizeBreaks = (
+  value: SupabaseRow['break_sessions'],
+  fallbackStart?: string | null,
+  fallbackEnd?: string | null
+): BreakPeriod[] => {
+  if (Array.isArray(value)) {
+    return value
+      .map(b => ({
+        start: toHHmm(b.start) ?? '',
+        end: toHHmm(b.end),
+      }))
+      .filter(b => b.start)
+  }
   if (typeof value === 'string') {
     try {
       const parsed = JSON.parse(value)
-      if (Array.isArray(parsed)) return parsed as BreakPeriod[]
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((b: any) => ({
+            start: toHHmm(b.start) ?? '',
+            end: toHHmm(b.end),
+          }))
+          .filter((b: BreakPeriod) => b.start)
+      }
     } catch {
       // ignore parse errors
     }
@@ -30,15 +59,20 @@ const normalizeBreaks = (value: SupabaseRow['break_sessions'], fallbackStart?: s
 
 const toSupabaseRecord = (row: SupabaseRow): AttendanceRecord => ({
   id: row.id,
-  date: row.date,
-  clockIn: row.clock_in ?? undefined,
-  clockOut: row.clock_out ?? undefined,
-  breakStart: row.break_start ?? undefined,
-  breakEnd: row.break_end ?? undefined,
+  date: row.work_date,
+  clockIn: toHHmm(row.clock_in),
+  clockOut: toHHmm(row.clock_out),
+  breakStart: undefined,
+  breakEnd: undefined,
   breaks: normalizeBreaks(row.break_sessions, row.break_start, row.break_end),
   totalWorkTime: row.total_work_time ?? undefined,
   totalBreakTime: row.total_break_time ?? undefined,
 })
+
+const toIsoDateTime = (date: string, time?: string): string | null => {
+  if (!time) return null
+  return `${date}T${time}:00Z`
+}
 
 const computeTotals = (record: AttendanceRecord) => {
   const breakMinutes = calculateTotalBreakMinutes(record.breaks)
@@ -48,14 +82,6 @@ const computeTotals = (record: AttendanceRecord) => {
 
     return {
       totalWorkTime: Math.max(0, workMinutes - breakMinutes),
-      totalBreakTime: breakMinutes,
-    }
-  }
-
-  if (record.breakStart && record.breakEnd) {
-    const breakMinutes = calculateMinutes(record.breakStart, record.breakEnd)
-    return {
-      totalWorkTime: undefined,
       totalBreakTime: breakMinutes,
     }
   }
@@ -78,7 +104,7 @@ const loadFromSupabase = async (): Promise<AttendanceRecord[]> => {
   const { data, error } = await supabase
     .from('attendance_records')
     .select('*')
-    .order('date', { ascending: false })
+    .order('work_date', { ascending: false })
 
   if (error) {
     throw error
@@ -95,36 +121,44 @@ const saveToSupabase = async (
   const { data: existing, error: fetchError } = await supabase
     .from('attendance_records')
     .select('*')
-    .eq('date', date)
+    .eq('work_date', date)
     .maybeSingle()
 
   if (fetchError && fetchError.code !== 'PGRST116') {
     throw fetchError
   }
 
-  const baseRecord: AttendanceRecord = existing ? toSupabaseRecord(existing) : { id: date, date }
+  const baseRecord: AttendanceRecord = existing ? toSupabaseRecord(existing) : { id: randomUUID(), date }
   const merged: AttendanceRecord = { ...baseRecord, ...updates, date }
   merged.breaks = updates.breaks ?? baseRecord.breaks ?? []
+
+  // Always clear legacy fields to prevent stale data
+  merged.breakStart = undefined
+  merged.breakEnd = undefined
   const totals = computeTotals(merged)
   merged.totalWorkTime = totals.totalWorkTime
   merged.totalBreakTime = totals.totalBreakTime
 
-  const { error: upsertError } = await supabase.from('attendance_records').upsert(
-    [
-      {
-        id: merged.id,
-        date: merged.date,
-        clock_in: merged.clockIn ?? null,
-        clock_out: merged.clockOut ?? null,
-        break_start: merged.breakStart ?? null,
-        break_end: merged.breakEnd ?? null,
-        break_sessions: merged.breaks ?? [],
-        total_work_time: merged.totalWorkTime ?? null,
-        total_break_time: merged.totalBreakTime ?? null,
-      },
-    ],
-    { onConflict: 'date' }
-  )
+  const breakSessions = (merged.breaks ?? []).map(b => ({
+    start: toIsoDateTime(merged.date, b.start),
+    end: toIsoDateTime(merged.date, b.end),
+  }))
+
+  const payload = {
+    id: merged.id,
+    work_date: merged.date,
+    clock_in: toIsoDateTime(merged.date, merged.clockIn),
+    clock_out: toIsoDateTime(merged.date, merged.clockOut),
+    break_start: null,
+    break_end: null,
+    break_sessions: breakSessions,
+    total_work_time: merged.totalWorkTime ?? null,
+    total_break_time: merged.totalBreakTime ?? null,
+  }
+
+  const { error: upsertError } = await supabase.from('attendance_records').upsert([payload], {
+    onConflict: 'work_date',
+  })
 
   if (upsertError) {
     throw upsertError
