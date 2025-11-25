@@ -11,10 +11,6 @@ export interface AttendanceRecord {
 
 export interface AttendanceState {
   records: AttendanceRecord[]
-  currentDate: string
   isClockedIn: boolean
   isOnBreak: boolean
-  currentClockIn?: string
-  currentBreakStart?: string
 }
-

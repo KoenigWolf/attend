@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AttendanceRecord } from '@/types/attendance'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parse } from 'date-fns'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday } from 'date-fns'
 import { formatMinutes } from '@/utils/time'
 
 interface MonthlyCalendarProps {

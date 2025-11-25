@@ -14,7 +14,6 @@ import HistoryList from './HistoryList'
 export default function AttendanceSystem() {
   const [state, setState] = useState<AttendanceState>({
     records: [],
-    currentDate: getCurrentDate(),
     isClockedIn: false,
     isOnBreak: false,
   })
@@ -29,13 +28,11 @@ export default function AttendanceSystem() {
       records,
       isClockedIn: !!todayRecord?.clockIn && !todayRecord?.clockOut,
       isOnBreak: !!todayRecord?.breakStart && !todayRecord?.breakEnd,
-      currentClockIn: todayRecord?.clockIn,
-      currentBreakStart: todayRecord?.breakStart,
     }))
   }, [])
 
   const getTodayRecord = (): AttendanceRecord | undefined => {
-    return state.records.find(r => r.date === state.currentDate)
+    return state.records.find(r => r.date === getCurrentDate())
   }
 
   const updateRecord = (updates: Partial<AttendanceRecord>) => {
@@ -73,8 +70,6 @@ export default function AttendanceSystem() {
       records: updatedRecords,
       isClockedIn: !!updatedRecord.clockIn && !updatedRecord.clockOut,
       isOnBreak: !!updatedRecord.breakStart && !updatedRecord.breakEnd,
-      currentClockIn: updatedRecord.clockIn,
-      currentBreakStart: updatedRecord.breakStart,
     }))
   }
 
