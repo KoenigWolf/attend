@@ -21,7 +21,7 @@ export default function TodaySummary({ record }: TodaySummaryProps) {
         <p className="text-sm text-slate-500">すべての記録はブラウザに自動保存されます。</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 shadow-inner">
           <div className="text-xs font-semibold text-slate-500 mb-2">出勤時刻</div>
           <div className="text-2xl font-bold text-slate-900">

@@ -59,7 +59,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
   }
 
   const renderDisplay = (record: AttendanceRecord) => (
-    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600">
       <div>
         <span className="text-slate-400">出勤: </span>
         <span className="font-semibold text-slate-800">{formatTime(record.clockIn)}</span>
@@ -87,7 +87,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
 
   const renderEditor = (record: AttendanceRecord) => (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         {[
           { label: '出勤', key: 'clockIn' as const },
           { label: '退勤', key: 'clockOut' as const },
@@ -107,18 +107,18 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
           </label>
         ))}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <button
           onClick={() => handleSave(record)}
           disabled={isSaving}
-          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
+          className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
         >
           保存
         </button>
         <button
           onClick={cancelEdit}
           disabled={isSaving}
-          className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="px-3 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed w-full sm:w-auto"
         >
           キャンセル
         </button>
@@ -142,7 +142,7 @@ export default function HistoryList({ records, isSaving, onEdit }: HistoryListPr
           {sortedRecords.length} records
         </span>
       </div>
-      <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+      <div className="space-y-3 max-h-[70vh] md:max-h-96 overflow-y-auto pr-1">
         {sortedRecords.length === 0 ? (
           <div className="text-center text-slate-400 py-10 border border-dashed border-slate-200 rounded-2xl bg-slate-50">
             まだ記録がありません
